@@ -44,6 +44,20 @@ function Categories() {
       setLoading(false);
     }
   };
+
+  const handleDelete = async (item)=> {
+    console.log(item, item.slug);
+    try{
+      const {data} = await axios.delete(`/category/${item.slug}`)
+      setCategories(categories.filter(category => category.slug !== data.slug))
+      toast.success('category deleted successfully')
+    }
+    catch(err){
+      console.log(err);
+      toast.error('Category delete faild')
+    }
+  }
+
   return (
     <AdminLayout>
       <Row>
@@ -73,7 +87,7 @@ function Categories() {
               <List.Item
                 actions={[
                   <a>Edit</a>,
-                  <a>delete</a>
+                  <a onClick={()=> handleDelete(item)}>delete</a>
 
                 ]}
               >

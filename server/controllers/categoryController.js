@@ -21,3 +21,13 @@ exports.readCategories = async (req, res) => {
         console.log(error);
     }
 };
+
+exports.removeCategory = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const category = await Category.findOneAndDelete({ slug });
+        res.json(category);
+    } catch (err) {
+        console.log(err);
+    }
+};
