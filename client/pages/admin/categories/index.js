@@ -12,6 +12,10 @@ function Categories() {
   // state
   const [loading, setLoading] = useState(false);
 
+  //hooks
+
+  const [form] = Form.useForm()
+
   const onFinish = async (values) => {
     // console.log("values => ", values);
     try {
@@ -20,6 +24,7 @@ function Categories() {
       console.log(data);
       toast.success("Category created successfully");
       setLoading(false);
+      form.resetFields(['name'])
     } catch (err) {
       console.log(err);
       toast.error("Category create failed");
@@ -34,7 +39,7 @@ function Categories() {
           <h1>Categories</h1>
           <p>Add new category</p>
 
-          <Form onFinish={onFinish}>
+          <Form onFinish={onFinish} form={form}>
             <Form.Item name="name">
               <Input
                 prefix={<EditOutlined className="site-form-item-icon" />}

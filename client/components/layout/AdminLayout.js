@@ -28,6 +28,7 @@ function AdminLayout({ children }) {
   const getCurrentAdmin = async () => {
     try {
       const { data } = await axios.get("/current-admin");
+      console.log(data, "admin layout");
       setLoading(false);
     } catch (err) {
       console.log(err);

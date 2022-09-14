@@ -4,6 +4,7 @@ const authRouter = express.Router();
 
 // controllers
 const { signup, signin, currentUser } = require('../controllers/auth');
+const { isAdmin, requireSignin } = require('../middleware');
 
 authRouter.get('/', (req, res) => {
     return res.json({
@@ -12,6 +13,6 @@ authRouter.get('/', (req, res) => {
 });
 authRouter.post('/signup', signup);
 authRouter.post('/signin', signin);
-authRouter.get('/current-admin', currentUser);
+authRouter.get('/current-admin', requireSignin, isAdmin, currentUser);
 
 module.exports = authRouter;
