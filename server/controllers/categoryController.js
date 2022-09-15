@@ -31,3 +31,14 @@ exports.removeCategory = async (req, res) => {
         console.log(err);
     }
 };
+
+exports.updateCategory = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { name } = req.body;
+        const category = await Category.findOneAndUpdate({ slug }, { name, slug: slugify(name) }, { new: true });
+        res.json(category);
+    } catch (err) {
+        console.log(err);
+    }
+};

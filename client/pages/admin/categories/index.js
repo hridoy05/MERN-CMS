@@ -5,6 +5,7 @@ import { Form, Input, Row, Col, Button, List } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import CategoryUpdateModal from "../../../components/modal/CategoryUpdateModal";
 
 const { Content, Sider } = Layout;
 
@@ -12,7 +13,9 @@ function Categories() {
   // state
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
-
+  //update state
+  const [updatingCategory, setUpdatingCategory] = useState([]);
+  const [visible, setVisible] = useState(false);
   //hooks
 
   const [form] = Form.useForm();
@@ -34,7 +37,7 @@ function Categories() {
     try {
       setLoading(true);
       const { data } = await axios.post("/category", values);
-      setCategories([data, ...categories])
+      setCategories([data, ...categories]);
       toast.success("Category created successfully");
       setLoading(false);
       form.resetFields(["name"]);
@@ -45,19 +48,42 @@ function Categories() {
     }
   };
 
-  const handleDelete = async (item)=> {
-    console.log(item, item.slug);
-    try{
-      const {data} = await axios.delete(`/category/${item.slug}`)
-      setCategories(categories.filter(category => category.slug !== data.slug))
-      toast.success('category deleted successfully')
+  const handleDelete = async (item) => {
+    try {
+      const { data } = await axios.delete(`/category/${item.slug}`);
+      setCategories(
+        categories.filter((category) => category.slug !== data.slug)
+      );
+      toast.success("category deleted successfully");
+    } catch (err) {
+      console.log(error);
+      toast.error("Category delete faild");
     }
-    catch(err){
-      console.log(err);
-      toast.error('Category delete faild')
+  };
+
+  const handleEdit = async (item) => {
+    setUpdatingCategory(item);
+    setVisible(true);
+  };
+
+  const handleUpdate = async (values)=> {
+    try {
+      const {data} = await axios.put(`/category/${updatingCategory.slug}`, values)
+      const newCategories = categories.map(category=>  {
+        if(category._id === data._id){
+          return data
+        }
+        return category
+      })
+      setCategories(newCategories)
+      toast.success('category update successfully')
+      setVisible(false)
+      setUpdatingCategory({})
+    } catch (error) {
+      console.log(error);
+      toast.error('Category update fail')
     }
   }
-
   return (
     <AdminLayout>
       <Row>
@@ -86,9 +112,8 @@ function Categories() {
             renderItem={(item) => (
               <List.Item
                 actions={[
-                  <a>Edit</a>,
-                  <a onClick={()=> handleDelete(item)}>delete</a>
-
+                  <a onClick={() => handleEdit(item)}>Edit</a>,
+                  <a onClick={() => handleDelete(item)}>delete</a>,
                 ]}
               >
                 <List.Item.Meta title={item.name} />
@@ -96,6 +121,11 @@ function Categories() {
             )}
           ></List>
         </Col>
+        <CategoryUpdateModal
+        updatingCategory={updatingCategory}
+         handleUpdate={handleUpdate}
+          visible={visible} 
+          setVisible={setVisible} />
       </Row>
     </AdminLayout>
   );
